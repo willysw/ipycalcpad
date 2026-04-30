@@ -1,0 +1,41 @@
+# Virtual environments
+.venv/
+.env/
+venv/
+env/
+
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/
+
+# Logs and runtime output
+*.log
+nohup.out
+pip.out
+pip.txt
+
+# Local/temporary project files
+.old/
+.aiassistant/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Test/coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
