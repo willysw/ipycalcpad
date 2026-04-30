@@ -1,0 +1,12 @@
+ipykernel>=7.2.0
+ipython>=9.12.0
+ipywidgets>=8.1.0
+jupyter>=1.1.0
+jupyterlab-spreadsheet-editor>=0.7.2
+jupyterlab_darkside_theme>=0.1.2
+numpy>=2.4.0
+pandas>=3.0.0
+pint>=0.25.0
+pyyaml>=6.0.0
+rich>=15.0.0
+scipy>=1.17.0

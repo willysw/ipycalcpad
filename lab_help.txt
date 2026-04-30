@@ -1,0 +1,175 @@
+JupyterLab - An extensible computational environment for Jupyter.
+
+This launches a Tornado based HTML Server that serves up an HTML5/Javascript
+JupyterLab client.
+
+JupyterLab has three different modes of running:
+
+* Core mode (`--core-mode`): in this mode JupyterLab will run using the JavaScript
+  assets contained in the installed `jupyterlab` Python package. In core mode, no
+  extensions are enabled. This is the default in a stable JupyterLab release if you
+  have no extensions installed.
+* Dev mode (`--dev-mode`): uses the unpublished local JavaScript packages in the
+  `dev_mode` folder.  In this case JupyterLab will show a red stripe at the top of
+  the page.  It can only be used if JupyterLab is installed as `pip install -e .`.
+* App mode: JupyterLab allows multiple JupyterLab "applications" to be
+  created by the user with different combinations of extensions. The `--app-dir` can
+  be used to set a directory for different applications. The default application
+  path can be found using `jupyter lab path`.
+
+Subcommands
+===========
+Subcommands are launched as `lab cmd [args]`. For information on using
+subcommand 'cmd', do: `lab cmd -h`.
+
+build
+clean
+path
+paths
+workspace
+workspaces
+licenses
+
+Options
+=======
+The options below are convenience aliases to configurable class-options,
+as listed in the "Equivalent to" description-line of the aliases.
+To see all configurable class-options for some <cmd>, use:
+    <cmd> --help-all
+
+--debug
+    Set debug level for the extension and underlying server applications.
+    Equivalent to: [--ServerApp.log_level=DEBUG --ExtensionApp.log_level=DEBUG]
+--show-config
+    Show the application's configuration (human-readable format)
+    Equivalent to: [--Application.show_config=True]
+--show-config-json
+    Show the application's configuration (json format)
+    Equivalent to: [--Application.show_config_json=True]
+--generate-config
+    generate default config file
+    Equivalent to: [--JupyterApp.generate_config=True]
+-y
+    Answer yes to any questions instead of prompting.
+    Equivalent to: [--JupyterApp.answer_yes=True]
+--allow-root
+    Allow the server to be run from root user.
+    Equivalent to: [--ServerApp.allow_root=True]
+--no-browser
+    Prevent the opening of the default url in the browser.
+    Equivalent to: [--ServerApp.open_browser=False --ExtensionApp.open_browser=False]
+--autoreload
+    Autoreload the webapp
+        Enable reloading of the tornado webapp and all imported Python packages
+        when any changes are made to any Python src files in server or
+        extensions.
+    Equivalent to: [--ServerApp.autoreload=True]
+--script
+    DEPRECATED, IGNORED
+    Equivalent to: [--FileContentsManager.save_script=True]
+--no-script
+    DEPRECATED, IGNORED
+    Equivalent to: [--FileContentsManager.save_script=False]
+--core-mode
+    Start the app in core mode.
+    Equivalent to: [--LabApp.core_mode=True]
+--dev-mode
+    Start the app in dev mode for running from source.
+    Equivalent to: [--LabApp.dev_mode=True]
+--skip-dev-build
+    Skip the initial install and JS build of the app in dev mode.
+    Equivalent to: [--LabApp.skip_dev_build=True]
+--watch
+    Start the app in watch mode.
+    Equivalent to: [--LabApp.watch=True]
+--splice-source
+    Splice source packages into app directory.
+    Equivalent to: [--LabApp.splice_source=True]
+--expose-app-in-browser
+    Expose the global app instance to browser via window.jupyterapp.
+    Equivalent to: [--LabApp.expose_app_in_browser=True]
+--extensions-in-dev-mode
+    Load prebuilt extensions in dev-mode.
+    Equivalent to: [--LabApp.extensions_in_dev_mode=True]
+--collaborative
+    To enable real-time collaboration, you must install the extension `jupyter_collaboration`.
+            You can install it using pip for example:
+
+                python -m pip install jupyter_collaboration
+
+            This flag is now deprecated and will be removed in JupyterLab v5.
+    Equivalent to: [--LabApp.collaborative=True]
+--custom-css
+    Load custom CSS in template html files. Default is False
+    Equivalent to: [--LabApp.custom_css=True]
+--log-level=<Enum>
+    Set the log level by value or name.
+    Choices: any of [0, 10, 20, 30, 40, 50, 'DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']
+    Default: 30
+    Equivalent to: [--Application.log_level]
+--config=<Unicode>
+    Full path of a config file.
+    Default: ''
+    Equivalent to: [--JupyterApp.config_file]
+--ip=<Unicode>
+    The IP address the Jupyter server will listen on.
+    Default: 'localhost'
+    Equivalent to: [--ServerApp.ip]
+--port=<Int>
+    The port the server will listen on (env: JUPYTER_PORT).
+    Default: 0
+    Equivalent to: [--ServerApp.port]
+--port-retries=<Int>
+    The number of additional ports to try if the specified port is not available
+    (env: JUPYTER_PORT_RETRIES).
+    Default: 50
+    Equivalent to: [--ServerApp.port_retries]
+--keyfile=<Unicode>
+    The full path to a private key file for usage with SSL/TLS.
+    Default: ''
+    Equivalent to: [--ServerApp.keyfile]
+--certfile=<Unicode>
+    The full path to an SSL/TLS certificate file.
+    Default: ''
+    Equivalent to: [--ServerApp.certfile]
+--client-ca=<Unicode>
+    The full path to a certificate authority certificate for SSL/TLS client
+    authentication.
+    Default: ''
+    Equivalent to: [--ServerApp.client_ca]
+--notebook-dir=<Unicode>
+    The directory to use for notebooks and kernels.
+    Default: ''
+    Equivalent to: [--ServerApp.root_dir]
+--browser=<Unicode>
+    Specify what command to use to invoke a web
+                          browser when starting the server. If not specified, the
+                          default browser will be determined by the `webbrowser`
+                          standard library module, which allows setting of the
+                          BROWSER environment variable to override it.
+    Default: ''
+    Equivalent to: [--ServerApp.browser]
+--pylab=<Unicode>
+    DISABLED: use %pylab or %matplotlib in the notebook to enable matplotlib.
+    Default: 'disabled'
+    Equivalent to: [--ServerApp.pylab]
+--watch=<Bool>
+    Whether to serve the app in watch mode
+    Default: False
+    Equivalent to: [--LabApp.watch]
+--app-dir=<Unicode>
+    The app directory to launch JupyterLab from.
+    Default: None
+    Equivalent to: [--LabApp.app_dir]
+
+Examples
+--------
+
+    jupyter lab                       # start JupyterLab
+            jupyter lab --dev-mode            # start JupyterLab in development mode, with no extensions
+            jupyter lab --core-mode           # start JupyterLab in core mode, with no extensions
+            jupyter lab --app-dir=~/myjupyterlabapp # start JupyterLab with a particular set of extensions
+            jupyter lab --certfile=mycert.pem # use SSL/TLS certificate
+
+To see all available configurables, use `--help-all`.
+

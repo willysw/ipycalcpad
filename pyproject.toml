@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ipycalcpad"
+version = "0.1.1"
+description = "A JupyterLab extension for a calculator pad."
+authors = [
+    { name = "Bill Williams", email = "willy@bearniebros.net" }
+]
+dependencies = [
+    "ipykernel>=7.2.0",
+    "ipython>=9.12.0",
+    "ipywidgets>=8.1.0",
+    "jupyter>=1.1.0",
+    "numpy>=2.4.0",
+    "pandas>=3.0.0",
+    "pint>=0.25.0",
+    "pyyaml>=6.0.0",
+    "rich>=15.0.0",
+    "scipy>=1.17.0"
+]
+

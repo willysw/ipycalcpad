@@ -1,0 +1,65 @@
+cell:
+  start: ''
+  end: ''
+
+line:
+  expression: '{tex}'
+  substituted: ' = {tex}'
+  result: ' = {tex}'
+  comment: '{tex}&emsp;'
+  full_expression: '{expression}{substituted}{result}'
+  expression_separator: ' ,\quad '
+  full_line: '&emsp;{comment}${full_expression}$'
+
+objects:
+  integer: '{val:d}'
+  decimal: '{val:.4g}'
+  pint_quantity: '{val:.4g~^L}'
+  preferred_units: ['kip', 'in', 's']
+
+assign:
+  default: '{target} = {val}'
+  substituted: '{val}'
+
+# Special functions
+callables:
+  default: '\texttt{{{name}}}\left({args}\right)'
+  known_function: '\{name}\left({args}\right)'
+  known_functions: [ 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh',
+                     'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'ln', 'log' ]
+  special_functions:
+    sqrt: '\sqrt{{{args[0]}}}'
+    exp: 'e^{{{args[0]}}}'
+    pow: '\left({args[0]}\right)^{{{args[1]}}}'
+    abs: '\left|{args[0]}\right|'
+
+variables:
+  default: '{{{var}}}'
+  substituted: '\left({{{var}}}\right)'
+  special_vars: {'pi': '\pi', 'alpha': '\alpha', 'beta': '\beta',
+                 'gamma': '\gamma', 'Gamma': '\Gamma', 'delta': '\delta',
+                 'Delta': '\Delta', 'epsilon': '\epsilon', 'zeta': '\zeta',
+                 'eta': '\eta', 'theta': '\theta', 'iota': '\iota',
+                 'kappa': '\kappa', 'lambda': '\lambda', 'mu': '\mu', 'nu': '\nu',
+                 'xi': '\xi', 'chi': '\chi', 'omicron': '\omicron',
+                 'omega': '\omega', 'Omega': '\Omega', 'upsilon': '\upsilon',
+                 'sigma': '\sigma', 'Sigma': '\Sigma', 'phi': '\phi'}
+
+literals:
+  default: '{{{object}}}'
+
+binary_ops:
+  unknown_op: '\texttt{{BinOp}}({{{left}}},{{{right}}}))'
+  add: '{left}+{right}'
+  sub: '{left}-{{{right}}}'
+  mult: '{{{left}}}\cdot{{{right}}}'
+  mult_short: '{{{left}}}\ {{{right}}}' # used between variables or between variable and callable
+  div: '\dfrac{{{left}}}{{{right}}}'
+  mod: '{{{left}}}\mod{{{right}}}'
+  pow: '{{{left}}}^{{{right}}}'
+
+unary_ops:
+  unknown_op: '\texttt{{UnaryOp}}({{{operand}}})'
+  neg: '-{{{operand}}}'
+  pos: '{operand}'
+  not: '\texttt{{not}}{{{operand}}}'
