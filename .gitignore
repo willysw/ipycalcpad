@@ -32,6 +32,7 @@ pip.txt
 Thumbs.db
 .idea/
 .vscode/
+lab.sh
 
 # Test/coverage artifacts
 .pytest_cache/
