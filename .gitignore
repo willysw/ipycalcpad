@@ -16,7 +16,6 @@ dist/
 # Jupyter
 *.ipynb
 .ipynb_checkpoints/
-notebooks/
 
 # Logs and runtime output
 *.log
