@@ -1,11 +1,12 @@
 import math
 
 from dataclasses import dataclass, KW_ONLY
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Type
 
 from ..node import Node
 
-from ...config import format_object
+from ...config import Configuration
+_C = Configuration()
 
 _TEMPLATE:str = '{{{object}}}'
 
@@ -17,17 +18,17 @@ class Terminal(Node):
     template: ClassVar[str] = _TEMPLATE
 
     def get_tex(self, subs: bool = False) -> str:
-        return self.template.format(object=format_object(self.obj))
+        return self.template.format(object=_C.format_object(self.obj))
 
     @property
     def value(self) -> Any:
-        if self.obj:
+        if self.obj is not None:
             return self.obj
         else:
             return math.nan
 
     @property
-    def type(self) -> Any:
+    def type(self) -> Type:
         return type(self.obj)
 
 

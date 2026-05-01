@@ -6,18 +6,18 @@ from dataclasses import dataclass
 from typing import Any
 
 from ...protocols import NodeType
-from .terminal import Terminal
+from .literal import Literal
 
-from ...config import Configuration, reduce_units
+from ...config import Configuration
 _C = Configuration()
 
 
 @dataclass
-class PintQuantity(Terminal):
+class PintQuantity(Literal):
     obj: 'pint.Quantity' = None
 
     def __post_init__(self):
-        self.obj = reduce_units(self.obj)
+        self.obj = _C.reduce_units(self.obj)
 
     @classmethod
     def from_ast(

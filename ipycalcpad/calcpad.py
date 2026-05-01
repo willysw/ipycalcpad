@@ -1,13 +1,16 @@
 import ast
+import pandas
 
 from argparse import Namespace
 from collections.abc import Sequence, Mapping
 from dataclasses import dataclass, field, InitVar
+
 from rich.pretty import pprint
 from typing import Any
 
 from .protocols import NodeType
-from .line import Line
+from .tree import Assign, Variable
+from .line import Line, LongLine
 from .transform import ASTTransformer, PintTransformer
 
 from .config import Configuration
@@ -90,9 +93,21 @@ class CalcPad:
             line_ast = ast.parse(line_text)
             line_comment = self._get_line_comment(line_text, line_ast)
             line_expressions = self._get_line_expressions(line_ast, namespace)
-            yield Line(expressions=line_expressions,
-                       comment=line_comment,
-                       arguments=arguments)
+
+            #TODO: move this to a separate function in lines subpackage. This class
+            # should not need to know about pandas nor which types trigger long lines.
+            if (line_expressions
+                    and
+                isinstance(line_expressions[0], (Variable,Assign))
+                    and
+                isinstance(line_expressions[0].value, (pandas.DataFrame, pandas.Series))):
+                    yield LongLine(expressions=line_expressions,
+                                   comment=line_comment,
+                                   arguments=arguments)
+            else:
+                yield Line(expressions=line_expressions,
+                           comment=line_comment,
+                           arguments=arguments)
 
     def _repr_markdown_(self):
         """
@@ -109,6 +124,7 @@ class CalcPad:
         else:
             return '\n\n'.join(line.get_markdown() for line in self.lines)
 
+    #TODO: These functions should be moved to the lines subpackage.
     def _get_line_expressions(self, line_ast:ast.AST, namespace:Mapping[str,Any]) -> Sequence[NodeType]|None:
         if isinstance(line_ast, ast.Module) and line_ast.body:
             line_pint_ast = PintTransformer(namespace).visit(line_ast)

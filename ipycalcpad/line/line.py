@@ -2,10 +2,10 @@ from argparse import Namespace
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from .protocols import NodeType
-from .tree import Terminal, Assign
+from ..protocols import NodeType
+from ..tree import Assign, Literal
 
-from .config import Configuration
+from ..config import Configuration
 _C = Configuration()
 
 _FULL_LINE_TEMPLATE:str = _C['line.full_line']
@@ -50,7 +50,7 @@ class Line:
     @property
     def expr_strings(self) -> Sequence[str]|None:
         if self.expressions:
-         return [_EXPRESSION_TEMPLATE.format(tex=expr.get_tex(subs=False)) for expr in self.expressions]
+            return [_EXPRESSION_TEMPLATE.format(tex=expr.get_tex(subs=False)) for expr in self.expressions]
         else:
             return None
 
@@ -70,16 +70,16 @@ class Line:
     @property
     def result_strings(self) -> Sequence[str]|None:
         if self.expressions:
-            expr_is_terminal = ((isinstance(expr, Terminal)
+            expr_is_literal = [(isinstance(expr, Literal)
                                 or
                                 (isinstance(expr, Assign) and
-                                 isinstance(expr.expression, Terminal)))
-                                for expr in self.expressions)
+                                 isinstance(expr.expression, Literal)))
+                                for expr in self.expressions]
 
             return [(_RESULT_TEMPLATE.format(tex=expr.get_tex_result())
-                     if not is_terminal else "")
-                    for expr, is_terminal
-                    in zip(self.expressions, expr_is_terminal)]
+                     if not is_literal else "")
+                    for expr, is_terminal, is_literal
+                    in zip(self.expressions, expr_is_literal)]
         else:
             return None
 

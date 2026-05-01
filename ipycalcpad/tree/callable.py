@@ -57,7 +57,7 @@ class Func(Node):
                         func=func,
                         arguments=children)
         else:
-            raise EnvironmentError(f"Function {node.func.id} not found.")
+            raise EnvironmentError(f"Function {func_name} not found.")
 
     def get_tex(self, subs: bool = False) -> str:
         if self.func_is_special:

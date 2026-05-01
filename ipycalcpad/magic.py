@@ -5,7 +5,6 @@ install()
 from IPython import get_ipython # noqa
 _IPYTHON = get_ipython()
 
-from IPython.display import display
 from IPython.core.magic import Magics, magics_class, line_cell_magic
 
 from .calcpad import CalcPad

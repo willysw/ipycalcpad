@@ -5,9 +5,10 @@ from dataclasses import dataclass, KW_ONLY
 from typing import ClassVar, Any, NamedTuple
 
 from ...protocols import NodeType
+from ...utility import name_to_tex
 from .terminal import Terminal
 
-from ...config import Configuration, format_object
+from ...config import Configuration
 _C = Configuration()
 
 _TEMPLATE:str = _C['variables.default']
@@ -43,13 +44,13 @@ class Variable(Terminal):
             item = cls._get_attribute_names(node.value, namespace)
             return Variable(node, namespace, obj=item.obj, name=item.name)
         else:
-            raise TypeError(f'Unexpected node type {type(node)} for variable')
+            raise TypeError(f'Unexpected node type {type(node)} for variable') # noqa
 
     def get_tex(self, subs: bool = False) -> str:
         if subs and self.obj is not None:
-            return self.template_subs.format(var=format_object(self.obj))
+            return self.template_subs.format(var=_C.format_object(self.obj))
         else:
-            return self.template.format(var=self.name_to_tex(self.name, _SPECIAL_VARS))
+            return self.template.format(var=name_to_tex(self.name, _SPECIAL_VARS))
 
     @property
     def has_substituted_fields(self) -> bool:
@@ -57,7 +58,6 @@ class Variable(Terminal):
             return True
         else:
             return False
-
 
     @classmethod
     def _get_attribute_names(cls, node: ast.AST, namespace: Mapping[str,Any]) -> _AttrItem:
@@ -74,9 +74,9 @@ class Variable(Terminal):
 
         if isinstance(node, ast.Call):
             return _AttrItem(names=[node.func.id],
-                             obj=eval(ast.unparse(node), namespace))
+                             obj=eval(ast.unparse(node), namespace)) # noqa
 
-        return _AttrItem(names=[], obj=eval(ast.unparse(node), namespace))
+        return _AttrItem(names=[], obj=eval(ast.unparse(node), namespace)) # noqa
 
 
 __all__ = ['Variable']

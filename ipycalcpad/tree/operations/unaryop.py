@@ -39,8 +39,8 @@ class UnaryOp(Node):
 
             if (isinstance(node.op, ast.USub)
                 and isinstance(children[0], Literal)
-                and isinstance(children[0].obj, (int, float, pint.Quantity))):
-                return Literal(node, namespace, obj=-children[0].obj)
+                and isinstance(children[0].obj, (int, float, pint.Quantity))): # noqa
+                return Literal(node, namespace, obj=-children[0].obj) # noqa
 
             return UNARY_OPS[type(node.op)](node, namespace, operand=children[0])
 

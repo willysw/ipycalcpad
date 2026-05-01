@@ -29,7 +29,7 @@ class Literal(Terminal):
         if isinstance(node, ast.Constant):
             return cls(node, namespace, obj=node.value)
         else:
-            raise TypeError(f'Expected Constant, got {type(node)}')
+            raise TypeError(f'Expected Constant, got {type(node)}') # noqa
 
 
 __all__ = ['Literal']

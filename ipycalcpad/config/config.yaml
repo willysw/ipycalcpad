@@ -12,9 +12,9 @@ line:
   full_line: '&emsp;{comment}${full_expression}$'
 
 objects:
-  integer: '{val:d}'
-  decimal: '{val:.4g}'
-  pint_quantity: '{val:.4g~^L}'
+  integer: 'd'
+  decimal: '.4g'
+  pint_quantity: '.4g~^L'
   preferred_units: ['kip', 'in', 's']
 
 assign:

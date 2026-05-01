@@ -19,6 +19,10 @@ dependencies = [
     "pint>=0.25.0",
     "pyyaml>=6.0.0",
     "rich>=15.0.0",
-    "scipy>=1.17.0"
+    "scipy>=1.17.0",
+    "tabulate>=0.10.0",
 ]
+
+[project.optional-dependencies]
+test = ["pytest>=9.0.0",]
 
