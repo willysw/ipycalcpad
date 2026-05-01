@@ -78,7 +78,7 @@ class Line:
 
             return [(_RESULT_TEMPLATE.format(tex=expr.get_tex_result())
                      if not is_literal else "")
-                    for expr, is_terminal, is_literal
+                    for expr, is_literal
                     in zip(self.expressions, expr_is_literal)]
         else:
             return None
