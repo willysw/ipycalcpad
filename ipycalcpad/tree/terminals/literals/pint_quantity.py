@@ -5,10 +5,10 @@ from collections.abc import Sequence, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from ...protocols import NodeType
-from .literal import Literal
+from ....protocols import NodeType
+from ..literal import Literal
 
-from ...config import Configuration
+from ....config import Configuration
 _C = Configuration()
 
 

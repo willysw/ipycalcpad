@@ -24,10 +24,14 @@ class _AttrItem(NamedTuple):
         return "_".join(self.names)
 
 
+KEY_TYPE = NodeType | str | int | slice | None
+
+
 @dataclass
 class Variable(Terminal):
     _:KW_ONLY
     name: str = ''
+    key: KEY_TYPE = None
     template: ClassVar[str] = _TEMPLATE
     template_subs: ClassVar[str] = _TEMPLATE_SUBS
 
@@ -40,9 +44,19 @@ class Variable(Terminal):
     ) -> NodeType:
         if isinstance(node, ast.Name):
             return cls(node, namespace, obj=namespace.get(node.id), name=node.id)
+
         elif isinstance(node, ast.Attribute):
             item = cls._get_attribute_names(node.value, namespace)
             return Variable(node, namespace, obj=item.obj, name=item.name)
+
+        elif isinstance(node, ast.Subscript) and children:
+            if isinstance(node.value, ast.Name):
+                var = cls.from_ast(node.value, namespace)
+                var.key=children[0]
+                return var
+            else:
+                raise TypeError(f'Unexpected node type {type(node.value)} for subscripted variable')
+
         else:
             raise TypeError(f'Unexpected node type {type(node)} for variable') # noqa
 
@@ -79,4 +93,4 @@ class Variable(Terminal):
         return _AttrItem(names=[], obj=eval(ast.unparse(node), namespace)) # noqa
 
 
-__all__ = ['Variable']
+__all__ = ['Variable', 'KEY_TYPE']

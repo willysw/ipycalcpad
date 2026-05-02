@@ -35,6 +35,10 @@ class ASTTransformer(ast.NodeTransformer):
     def visit_Constant(self, node: ast.Constant) -> NodeType:
         return Literal.from_ast(node, self.namespace)
 
+    def visit_Subscript(self, node: ast.Subscript) -> NodeType:
+        key = self.visit(node.slice)
+        return Variable.from_ast(node, self.namespace, children=(key,))
+
     def visit_Attribute(self, node: ast.Attribute) -> NodeType:
         return Variable.from_ast(node, self.namespace)
 
@@ -49,6 +53,23 @@ class ASTTransformer(ast.NodeTransformer):
     def visit_UnaryOp(self, node: ast.UnaryOp) -> NodeType:
         operand = self.visit(node.operand)
         return UnaryOp.from_ast(node, self.namespace, children=(operand,))
+
+    #TODO: implement these
+    """ Unimplemented Visitors """
+    def visit_Slice(self, node: ast.Slice) -> slice|None:
+        raise NotImplementedError("Slice nodes are not supported yet in this transformer")
+
+    def visit_Tuple(self, node: ast.Tuple) -> tuple[NodeType,...]:
+        raise NotImplementedError("Tuple nodes are not supported yet in this transformer")
+
+    def visit_List(self, node: ast.List) -> list[NodeType]:
+        raise NotImplementedError("List nodes are not supported yet in this transformer")
+
+    def visit_Set(self, node: ast.Set) -> set[NodeType]:
+        raise NotImplementedError("Set nodes are not supported yet in this transformer")
+
+    def visit_Dict(self, node: ast.Dict) -> dict[NodeType, NodeType]:
+        raise NotImplementedError("Dict nodes are not supported yet in this transformer")
 
 
 __all__ = ['ASTTransformer']
