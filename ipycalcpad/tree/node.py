@@ -29,8 +29,8 @@ class Node(NodeType):
     def get_tex(self, subs: bool = False) -> str:
         return f'\\texttt{{{self.__class__.__name__}}}'
 
-    def get_tex_result(self) -> str:
-        return _C.format_object(self.value)
+    def get_tex_result(self, format_spec: str = None) -> str:
+        return _C.format_object(self.value, format_spec)
 
     def get_result(self):
         return _C.reduce_units(self.value)
@@ -59,7 +59,6 @@ class Node(NodeType):
                             return True
         # default to False
         return False
-
 
     @staticmethod
     def parens_by_precedence(precedence: int, other: NodeType, subs: bool = False) -> str:

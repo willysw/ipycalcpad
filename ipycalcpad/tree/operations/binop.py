@@ -34,7 +34,7 @@ class BinOp(Node):
     ) -> 'BinOp':
         from .binop_ops import BINARY_OPS
         if type(node.op) in BINARY_OPS:
-            return BINARY_OPS[type(node.op)](node, namespace, left=children[0], right=children[1])
+            return BINARY_OPS[type(node.op)](namespace, left=children[0], right=children[1])
         else:
             return cls(namespace, left=children[0], right=children[1])
 

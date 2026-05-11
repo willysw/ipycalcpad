@@ -89,6 +89,13 @@ class Line:
         """
         return self.get_markdown()
 
+    @property
+    def format_spec(self) -> str|None:
+        if self.arguments and self.arguments.format_spec:
+            return self.arguments.format_spec
+        else:
+            return None
+
     def get_markdown(self) -> str:
         """
         Generate complete markdown string for the line.
@@ -198,7 +205,7 @@ class Line:
                                  isinstance(expr.expr.expression, Literal)))
                                 for expr in self.expressions]
 
-            return [(_RESULT_TEMPLATE.format(tex=expr.expr.get_tex_result())
+            return [(_RESULT_TEMPLATE.format(tex=expr.expr.get_tex_result(format_spec=self.format_spec))
                      if not is_literal else "")
                     for expr, is_literal
                     in zip(self.expressions, expr_is_literal)]

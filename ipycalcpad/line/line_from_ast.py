@@ -41,7 +41,15 @@ def line_from_cell_line_text(
         A Line or LongLine.
     """
     line_ast = ast.parse(line_text)
+
+    # Extract the line comment
     line_comment = get_line_comment(line_text, line_ast)
+
+    # Extract meta strings
+    meta_strings = get_line_meta_strings(line_ast)
+    arguments = process_meta_strings(meta_strings, arguments)
+
+    # Extract expressions after removing meta strings
     line_expressions = get_line_expressions(line_ast, namespace, arguments)
 
     if (line_expressions and
@@ -112,7 +120,6 @@ def get_line_comment(
     """
     start_search_pos = get_line_comment_position(line_ast)
     raw_comment = line_text[start_search_pos:].partition('#')[2]
-    #TODO: get extras here
     return raw_comment.strip()
 
 
@@ -145,3 +152,36 @@ def get_line_comment_position(
                    if (hasattr(n, 'end_col_offset') and
                        n.end_col_offset is not None)]
     return max(end_offsets) if end_offsets else 0
+
+
+def get_line_meta_strings(line_ast:ast.AST) -> list[str]:
+    """
+    Extract meta strings from a line of code.
+    """
+    new_body = []
+    meta_strings = []
+    if isinstance(line_ast, ast.Module):
+        for node in line_ast.body:
+            if (isinstance(node, ast.Expr) and
+                isinstance(node.value, ast.Constant) and
+                isinstance(node.value.value, str)):
+                meta_strings.append(node.value.value)
+            else:
+                new_body.append(node)
+        line_ast.body = new_body
+    return meta_strings
+
+
+def process_meta_strings(meta_strings: list[str], arguments:Namespace) -> Namespace:
+    preferred_units = []
+    format_spec = None
+    for meta_string in meta_strings:
+        for s in meta_string.strip().split():
+            if s.startswith(':'):
+                format_spec = s[1:]
+            else:
+                preferred_units.append(s)
+    arguments.preferred_units = tuple(preferred_units)
+    arguments.format_spec = format_spec
+    return arguments
+
