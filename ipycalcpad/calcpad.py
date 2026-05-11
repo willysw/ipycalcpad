@@ -1,5 +1,5 @@
 from argparse import Namespace
-from collections.abc import Sequence, Mapping
+from collections.abc import Sequence, Mapping, MutableMapping
 from dataclasses import dataclass, field, InitVar
 
 from rich.pretty import pprint
@@ -37,11 +37,11 @@ class CalcPad:
         Configuration arguments for rendering and substitution.
     """
     cell_text: InitVar[str] = None
-    namespace: InitVar[Mapping[str,Any]] = None
+    namespace: InitVar[MutableMapping[str,Any]] = None
     lines: Sequence[Line] = field(default_factory=list)
     arguments: Namespace = field(default_factory=Namespace)
 
-    def __post_init__(self, cell_text: str, namespace: Mapping[str,Any]):
+    def __post_init__(self, cell_text: str, namespace: MutableMapping[str,Any]):
         self.init_from_string(cell_text, namespace)
         if self.arguments.debug:
             pprint(self.arguments, expand_all=True)
@@ -50,7 +50,7 @@ class CalcPad:
     def init_from_string(
             self,
             cell_text: str = None,
-            namespace: Mapping[str,Any] = None
+            namespace: MutableMapping[str,Any] = None
     ) -> None:
         """
         Initialize CalcPad from raw cell text.
@@ -75,9 +75,15 @@ class CalcPad:
         """
         if cell_text:
             namespace = namespace if (namespace is not None) else {}
-            self.lines = [line_from_cell_line_text(line_text=line_text,
-                                                   namespace=namespace,
-                                                   arguments=self.arguments)
+
+            # Set the pint registry from the users namespace
+            _C.set_pint_registry_from_namespace(namespace)
+
+            self.lines = [line_from_cell_line_text(
+                            line_text=line_text,
+                            namespace=namespace,
+                            arguments=self.arguments
+                            )
                           for line_text in cell_text.splitlines()]
         else:
             self.lines = []

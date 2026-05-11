@@ -24,17 +24,20 @@ class Configuration:
         Class-level registry mapping types to their formatters.
     """
     format_registry: ClassVar[FMT_REG]
+    pint_registry: ClassVar[pint.UnitRegistry]
     _config: ClassVar[dict[str,Any]]
+    _instance: ClassVar['Configuration']
 
     def __new__(cls, *args, **kwargs):
         """
         Create or return the singleton Configuration instance.
         """
-        if (not hasattr(cls, '_config')) or (cls._config is None):
+        if (not hasattr(cls, '_instance')) or (cls._instance is None):
             cls._load_config()
-        if (not hasattr(cls, 'format_registry')) or (cls.format_registry is None):
             cls.format_registry = dict()
-        return super().__new__(cls)
+            cls.pint_registry = pint.UnitRegistry()
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __getitem__(self, key):
         """
@@ -116,6 +119,18 @@ class Configuration:
         cls.format_registry[obj_type] = formatter
 
     @classmethod
+    def set_pint_registry_from_namespace(cls, namespace: MutableMapping[str, Any]):
+        try:
+            cls.pint_registry = next(obj for obj in namespace.values()
+                                     if isinstance(obj, pint.UnitRegistry))
+        except StopIteration:
+            cls.pint_registry = pint.UnitRegistry()
+            namespace['ureg'] = cls.pint_registry
+            raise Warning('No unit registry found in namespace. '
+                          'Using default registry `ureg` and '
+                          'adding to the namespace.')
+
+    @classmethod
     def _load_config(cls):
         """
         Load configuration from the config.yaml file.
@@ -166,17 +181,17 @@ class Configuration:
                 return None
         return obj
 
-
-def _pint_units_from_strings(strs: Sequence[str] = None) -> Sequence|None:
-    if strs:
-        return tuple(pint.Unit(i) for i in strs)
-    else:
-        return None
+    @classmethod
+    def pint_units_from_strings(cls, strs: Sequence[str] = None) -> Sequence|None:
+        if strs:
+            return tuple(cls.pint_registry.Unit(i) for i in strs)
+        else:
+            return None
 
 # Initialize the singleton instance.
 _C = Configuration()
 _PINT_PREFERRED_UNIT_STRS = cast(list[str], _C['objects.preferred_units'])
-_PINT_PREFERRED_UNITS = _pint_units_from_strings(_PINT_PREFERRED_UNIT_STRS)
+_PINT_PREFERRED_UNITS = _C.pint_units_from_strings(_PINT_PREFERRED_UNIT_STRS)
 
 # Define the ``reduce_units`` method. This is defined here so that the Configuration
 # can be instantiated and used to import the preferred units.
@@ -201,7 +216,7 @@ def reduce_units(value: Any, preferred_units: Sequence[str] = None) -> Any:
         return value
 
     if preferred_units:
-        return value.to_preferred(_pint_units_from_strings(preferred_units))
+        return value.to_preferred(_C.pint_units_from_strings(preferred_units))
     elif _PINT_PREFERRED_UNITS:
         return value.to_preferred(_PINT_PREFERRED_UNITS)
     else:

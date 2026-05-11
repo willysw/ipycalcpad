@@ -87,9 +87,10 @@ class Variable(Terminal):
         if not subs:
             return self.template.format(var=name_to_tex(self.name, _SPECIAL_VARS))
         else:
-            return super().get_tex(subs=subs,
-                                   format_spec=format_spec,
-                                   preferred_units=preferred_units)
+            reduced_obj = _C.reduce_units(self.obj, preferred_units=preferred_units)
+            return self.template_subs.format(
+                var=_C.format_object(reduced_obj, format_spec=format_spec)
+            )
 
     @property
     def has_substituted_fields(self) -> bool:

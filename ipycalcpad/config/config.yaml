@@ -14,7 +14,7 @@ line:
 objects:
   integer: 'd'
   decimal: '.4g'
-  pint_quantity: '{number_spec}~^L'
+  pint_quantity: '{number_spec}~L'
   preferred_units: ['kip', 'in', 's']
 
 assign:

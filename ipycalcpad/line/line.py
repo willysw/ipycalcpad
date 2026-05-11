@@ -55,6 +55,8 @@ class Line:
     expressions: Sequence[Expression]|None = None
     arguments: Namespace|None = None
     comment: str = ""
+    format_spec: str|None = None
+    preferred_units: Sequence[str]|None = None
 
     def __post_init__(self):
         """
@@ -88,20 +90,6 @@ class Line:
             Markdown-formatted string representation of the line.
         """
         return self.get_markdown()
-
-    @property
-    def format_spec(self) -> str|None:
-        if self.arguments and self.arguments.format_spec:
-            return self.arguments.format_spec
-        else:
-            return None
-
-    @property
-    def preferred_units(self) -> list[str]|None:
-        if self.arguments and self.arguments.preferred_units:
-            return self.arguments.preferred_units
-        else:
-            return None
 
     def get_markdown(self) -> str:
         """
@@ -190,9 +178,19 @@ class Line:
         if self.expressions:
             if self.arguments and self.arguments.substitute:
                 do_subs = [expr.expr.has_substituted_fields for expr in self.expressions]
-                return [(_SUBSTITUTED_TEMPLATE.format(tex=expr.expr.get_tex(subs=True))
-                         if subs else "")
-                        for expr, subs in zip(self.expressions, do_subs)]
+                out = []
+                for expr, do_sub in zip(self.expressions, do_subs):
+                    if do_sub:
+                        out.append(
+                            _SUBSTITUTED_TEMPLATE.format(
+                                tex=expr.expr.get_tex(subs=True,
+                                                      format_spec=self.format_spec,
+                                                      preferred_units=self.preferred_units)
+                            )
+                        )
+                    else:
+                        out.append("")
+                return out
             else:
                 return ["" for _ in self.expressions]
         else:

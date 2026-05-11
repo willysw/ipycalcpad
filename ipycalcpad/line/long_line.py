@@ -38,7 +38,7 @@ class LongLine(Line):
         if self.arguments is None:
             self.arguments = Namespace()
 
-    def get_markdown(self):
+    def get_markdown(self, ):
         """
         Generate markdown representation for long-form display.
 

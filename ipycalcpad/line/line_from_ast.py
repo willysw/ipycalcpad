@@ -47,21 +47,25 @@ def line_from_cell_line_text(
 
     # Extract meta strings
     meta_strings = get_line_meta_strings(line_ast)
-    arguments = process_meta_strings(meta_strings, arguments)
+    format_spec, preferred_units = process_meta_strings(meta_strings)
 
     # Extract expressions after removing meta strings
     line_expressions = get_line_expressions(line_ast, namespace, arguments)
 
     if (line_expressions and
-        isinstance(line_expressions[0], (Variable, Assign)) and
+        isinstance(line_expressions[0].expr, (Variable, Assign)) and
         isinstance(line_expressions[0].expr.value, _LONG_LINE_TYPES)):
         return LongLine(expressions=line_expressions,
-                       comment=line_comment,
-                       arguments=arguments)
+                        arguments=arguments,
+                        comment=line_comment,
+                        format_spec=format_spec,
+                        preferred_units=preferred_units)
     else:
         return Line(expressions=line_expressions,
-                   comment=line_comment,
-                   arguments=arguments)
+                    arguments=arguments,
+                    comment=line_comment,
+                    format_spec=format_spec,
+                    preferred_units=preferred_units)
 
 
 def get_line_expressions(
@@ -172,7 +176,7 @@ def get_line_meta_strings(line_ast:ast.AST) -> list[str]:
     return meta_strings
 
 
-def process_meta_strings(meta_strings: list[str], arguments:Namespace) -> Namespace:
+def process_meta_strings(meta_strings: list[str]) -> tuple[str|None, tuple[str]]:
     preferred_units = []
     format_spec = None
     for meta_string in meta_strings:
@@ -181,7 +185,5 @@ def process_meta_strings(meta_strings: list[str], arguments:Namespace) -> Namesp
                 format_spec = s[1:]
             else:
                 preferred_units.append(s)
-    arguments.preferred_units = tuple(preferred_units)
-    arguments.format_spec = format_spec
-    return arguments
+    return format_spec, tuple(preferred_units)
 

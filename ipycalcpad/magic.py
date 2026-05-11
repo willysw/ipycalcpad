@@ -5,7 +5,7 @@ install()
 from IPython import get_ipython # noqa
 _IPYTHON = get_ipython()
 
-from IPython.core.magic import Magics, magics_class, line_cell_magic
+from IPython.core.magic import Magics, magics_class, line_cell_magic, line_magic
 
 from .calcpad import CalcPad
 
@@ -28,6 +28,10 @@ _UTIL_GROUP.add_argument('--debug',
 class Magic(Magics):
 
     @line_cell_magic
+    def pad(self, line:str, cell:str) -> CalcPad|None:
+        return self.calcpad(line, cell)
+
+    @line_cell_magic
     def calcpad(self, line:str, cell:str) -> CalcPad|None:
         try:
             arguments = _PARSER.parse_args(line.split())
@@ -35,3 +39,4 @@ class Magic(Magics):
             return None
 
         return CalcPad(cell_text=cell, arguments=arguments, namespace=_IPYTHON.user_ns)
+

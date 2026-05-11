@@ -16,9 +16,6 @@ _C = Configuration()
 class PintQuantity(Literal):
     obj: 'pint.Quantity' = None
 
-    def __post_init__(self):
-        self.obj = _C.reduce_units(self.obj)
-
     @classmethod
     def from_ast(
             cls,
@@ -30,14 +27,4 @@ class PintQuantity(Literal):
         kwargs = {kw.arg: kw.value.value
                   for kw in node.keywords
                   if isinstance(kw.value, ast.Constant)}
-        return cls(namespace,
-                   obj=(cls._get_registry(namespace)
-                        .Quantity(*args, **kwargs))) # noqa
-
-    @staticmethod
-    def _get_registry(namespace:Mapping[str,Any]) -> pint.UnitRegistry:
-        try:
-            return next(obj for obj in namespace.values()
-                        if isinstance(obj, pint.UnitRegistry))
-        except StopIteration:
-            raise EnvironmentError('No transform unit registry found in namespace')
+        return cls(namespace, obj=(_C.pint_registry.Quantity(*args, **kwargs))) # noqa
