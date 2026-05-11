@@ -5,7 +5,6 @@ This module defines the Line class which represents a single line of
 calculation expressions with optional comments. It handles parsing,
 evaluation, and markdown rendering of mathematical expressions.
 """
-import ast
 
 from argparse import Namespace
 from collections.abc import Sequence
@@ -28,6 +27,12 @@ _COMMENT_TEMPLATE:str = _C['line.comment']
 
 
 @dataclass(kw_only=True)
+class Expression:
+    expr: NodeType
+    py_expr: str
+
+
+@dataclass(kw_only=True)
 class Line:
     """
     Represents a single line containing expressions and an optional comment.
@@ -47,7 +52,7 @@ class Line:
         Optional comment text to be displayed alongside expressions.
         Defaults to empty string.
     """
-    expressions: Sequence[NodeType]|None = None
+    expressions: Sequence[Expression]|None = None
     arguments: Namespace|None = None
     comment: str = ""
 
@@ -68,8 +73,7 @@ class Line:
             (not self.arguments.no_execute)
         ):
             for expr in self.expressions:
-                expr_code = ast.unparse(expr.ast_node)
-                exec(expr_code, cast(dict, expr.namespace))
+                exec(expr.py_expr, cast(dict, expr.expr.namespace))
 
     def _repr_markdown_(self) -> str:
         """
@@ -141,7 +145,7 @@ class Line:
             original form, or None if no expressions exist.
         """
         if self.expressions:
-            return [_EXPRESSION_TEMPLATE.format(tex=expr.get_tex(subs=False)) for expr in self.expressions]
+            return [_EXPRESSION_TEMPLATE.format(tex=expr.expr.get_tex(subs=False)) for expr in self.expressions]
         else:
             return None
 
@@ -163,8 +167,8 @@ class Line:
         """
         if self.expressions:
             if self.arguments and self.arguments.substitute:
-                do_subs = [expr.has_substituted_fields for expr in self.expressions]
-                return [(_SUBSTITUTED_TEMPLATE.format(tex=expr.get_tex(subs=True))
+                do_subs = [expr.expr.has_substituted_fields for expr in self.expressions]
+                return [(_SUBSTITUTED_TEMPLATE.format(tex=expr.expr.get_tex(subs=True))
                          if subs else "")
                         for expr, subs in zip(self.expressions, do_subs)]
             else:
@@ -188,13 +192,13 @@ class Line:
             expressions), or None if no expressions exist.
         """
         if self.expressions:
-            expr_is_literal = [(isinstance(expr, Literal)
+            expr_is_literal = [(isinstance(expr.expr, Literal)
                                 or
-                                (isinstance(expr, Assign) and
-                                 isinstance(expr.expression, Literal)))
+                                (isinstance(expr.expr, Assign) and
+                                 isinstance(expr.expr.expression, Literal)))
                                 for expr in self.expressions]
 
-            return [(_RESULT_TEMPLATE.format(tex=expr.get_tex_result())
+            return [(_RESULT_TEMPLATE.format(tex=expr.expr.get_tex_result())
                      if not is_literal else "")
                     for expr, is_literal
                     in zip(self.expressions, expr_is_literal)]
@@ -218,4 +222,4 @@ class Line:
             return ''
 
 
-__all__ = ['Line']
+__all__ = ['Line', 'Expression']

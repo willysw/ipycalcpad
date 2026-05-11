@@ -30,7 +30,7 @@ class PintQuantity(Literal):
         kwargs = {kw.arg: kw.value.value
                   for kw in node.keywords
                   if isinstance(kw.value, ast.Constant)}
-        return cls(node, namespace,
+        return cls(namespace,
                    obj=(cls._get_registry(namespace)
                         .Quantity(*args, **kwargs))) # noqa
 

@@ -59,7 +59,7 @@ class Assign(Node):
         NodeType
             A new Assign instance.
         """
-        return cls(node, namespace, target=children[0], expression=children[1])
+        return cls(namespace, target=children[0], expression=children[1])
     
     def get_tex(self, subs: bool = False) -> str:
         if subs:

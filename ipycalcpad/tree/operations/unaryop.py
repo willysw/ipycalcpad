@@ -45,7 +45,7 @@ class UnaryOp(Node):
             return UNARY_OPS[type(node.op)](node, namespace, operand=children[0])
 
         else:
-            return cls(node, namespace, operand=children[0])
+            return cls(namespace, operand=children[0])
 
     def op_func(self, x): return math.nan
 

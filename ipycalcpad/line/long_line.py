@@ -61,15 +61,15 @@ class LongLine(Line):
             else:
                 comment_text = ''
 
-            if isinstance(expr, Assign) and expr.target:
-                desc_text = f'${expr.target.get_tex(subs=False)}$\n\n'
+            if isinstance(expr.expr, Assign) and expr.expr.target:
+                desc_text = f'${expr.expr.target.get_tex(subs=False)}$\n\n'
             else:
                 desc_text = ''
 
             return ('\n\n' +
                     comment_text +
                     desc_text +
-                    expr.get_tex_result() +
+                    expr.expr.get_tex_result() +
                     '\n\n')
 
         return ""

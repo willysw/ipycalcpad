@@ -6,7 +6,7 @@ from typing import Any, Mapping, Sequence
 
 from ..protocols import NodeType
 from ..tree import Assign, Variable
-from .line import Line
+from .line import Line, Expression
 from .long_line import LongLine
 from ..transform import ASTTransformer, PintTransformer
 
@@ -44,11 +44,9 @@ def line_from_cell_line_text(
     line_comment = get_line_comment(line_text, line_ast)
     line_expressions = get_line_expressions(line_ast, namespace, arguments)
 
-    if (line_expressions
-            and
-            isinstance(line_expressions[0], (Variable, Assign))
-            and
-            isinstance(line_expressions[0].value, _LONG_LINE_TYPES)):
+    if (line_expressions and
+        isinstance(line_expressions[0], (Variable, Assign)) and
+        isinstance(line_expressions[0].expr.value, _LONG_LINE_TYPES)):
         return LongLine(expressions=line_expressions,
                        comment=line_comment,
                        arguments=arguments)
@@ -62,7 +60,7 @@ def get_line_expressions(
         line_ast: ast.AST,
         namespace: Mapping[str,Any],
         arguments: Namespace
-) -> Sequence[NodeType]|None:
+) -> Sequence[Expression]|None:
     """
     Extract and transform expressions from a parsed AST.
 
@@ -83,8 +81,12 @@ def get_line_expressions(
     Sequence[NodeType] or None
     """
     if isinstance(line_ast, ast.Module) and line_ast.body:
+        line_py_exprs = [ast.unparse(node) for node in line_ast.body]
         line_pint_ast = PintTransformer(namespace).visit(line_ast)
-        return ASTTransformer(namespace, arguments).visit(line_pint_ast)
+        line_expr_nodes = ASTTransformer(namespace, arguments).visit(line_pint_ast)
+        return [Expression(expr=expr, py_expr=py_expr)
+                for expr, py_expr
+                in zip(line_expr_nodes, line_py_exprs)]
     else:
         return None
 

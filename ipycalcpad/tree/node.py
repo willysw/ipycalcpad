@@ -13,7 +13,6 @@ _C = Configuration()
 
 @dataclass
 class Node(NodeType):
-    ast_node: ast.AST = field(repr=False)
     namespace: Mapping[str,Any] = field(repr=False)
     node_precedence: ClassVar[int] = 100000
     child_fields: ClassVar[tuple[str, ...]] = tuple()
@@ -25,7 +24,7 @@ class Node(NodeType):
             namespace: Mapping[str,Any],
             children: Sequence[NodeType]
     ) -> 'Node':
-        return cls(node, namespace)
+        return cls(namespace)
 
     def get_tex(self, subs: bool = False) -> str:
         return f'\\texttt{{{self.__class__.__name__}}}'
@@ -39,13 +38,6 @@ class Node(NodeType):
     @property
     def value(self) -> Any:
         return math.nan
-
-    @property
-    def text(self) -> str:
-        if self.ast_node:
-            return ast.unparse(self.ast_node)
-        else:
-            return ''
 
     @property
     def has_substituted_fields(self) -> bool:

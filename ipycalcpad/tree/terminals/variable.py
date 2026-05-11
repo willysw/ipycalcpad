@@ -43,11 +43,11 @@ class Variable(Terminal):
             children: Sequence[NodeType] = None
     ) -> NodeType:
         if isinstance(node, ast.Name):
-            return cls(node, namespace, obj=namespace.get(node.id), name=node.id)
+            return cls(namespace, obj=namespace.get(node.id), name=node.id)
 
         elif isinstance(node, ast.Attribute):
             item = cls._get_attribute_names(node.value, namespace)
-            return Variable(node, namespace, obj=item.obj, name=item.name)
+            return Variable(namespace, obj=item.obj, name=item.name)
 
         elif isinstance(node, ast.Subscript) and children:
             if isinstance(node.value, ast.Name):
@@ -59,6 +59,24 @@ class Variable(Terminal):
 
         else:
             raise TypeError(f'Unexpected node type {type(node)} for variable') # noqa
+
+    @property
+    def value(self) -> Any:
+        if self.key is not None:
+            if isinstance(self.key, NodeType):
+                key = self.key.value
+            elif isinstance(self.key, (slice | int | str)):
+                key = self.key
+            else:
+                raise TypeError(f'Unexpected key type {self.key}: {type(self.key)}')
+
+            if isinstance(self.obj, Mapping):
+                return self.obj.get(key)
+
+            if isinstance(self.obj, Sequence) and isinstance(key, (int, slice)):
+                return self.obj.__getitem__(key) # noqa
+
+        return super().value
 
     def get_tex(self, subs: bool = False) -> str:
         if subs and self.obj is not None:

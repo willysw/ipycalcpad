@@ -27,7 +27,7 @@ class Literal(Terminal):
             children: Sequence[NodeType] = None
     ) -> 'Literal':
         if isinstance(node, ast.Constant):
-            return cls(node, namespace, obj=node.value)
+            return cls(namespace, obj=node.value)
         else:
             raise TypeError(f'Expected Constant, got {type(node)}') # noqa
 

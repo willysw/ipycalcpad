@@ -36,7 +36,7 @@ class BinOp(Node):
         if type(node.op) in BINARY_OPS:
             return BINARY_OPS[type(node.op)](node, namespace, left=children[0], right=children[1])
         else:
-            return cls(node, namespace, left=children[0], right=children[1])
+            return cls(namespace, left=children[0], right=children[1])
 
     def op_func(self, x, y): return nan
 

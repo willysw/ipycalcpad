@@ -51,8 +51,7 @@ class Func(Node):
 
         func = namespace.get(func_name)
         if func and isinstance(func, Callable):
-            return Func(node,
-                        namespace,
+            return Func(namespace,
                         name=func_name,
                         func=func,
                         arguments=children)
