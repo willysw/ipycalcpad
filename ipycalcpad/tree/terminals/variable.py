@@ -78,11 +78,18 @@ class Variable(Terminal):
 
         return super().value
 
-    def get_tex(self, subs: bool = False) -> str:
-        if subs and self.obj is not None:
-            return self.template_subs.format(var=_C.format_object(self.obj))
-        else:
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        if not subs:
             return self.template.format(var=name_to_tex(self.name, _SPECIAL_VARS))
+        else:
+            return super().get_tex(subs=subs,
+                                   format_spec=format_spec,
+                                   preferred_units=preferred_units)
 
     @property
     def has_substituted_fields(self) -> bool:

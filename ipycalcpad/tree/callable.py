@@ -36,7 +36,6 @@ class Func(Node):
         elif self.name in _KNOWN_FUNCTIONS:
             self.func_template = _TEMPLATE_KNOWN
 
-
     @classmethod
     def from_ast(
             cls,
@@ -58,11 +57,22 @@ class Func(Node):
         else:
             raise EnvironmentError(f"Function {func_name} not found.")
 
-    def get_tex(self, subs: bool = False) -> str:
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
         if self.func_is_special:
-            return self.func_template.format(name=self.name, args=self.args_tex(subs))
+            return self.func_template.format(name=self.name,
+                                             args=self.args_tex(subs=subs,
+                                                                format_spec=format_spec,
+                                                                preferred_units=preferred_units))
         else:
-            return self.func_template.format(name=self.name, args=self.all_args_tex(subs))
+            return self.func_template.format(name=self.name,
+                                             args=self.all_args_tex(subs=subs,
+                                                                    format_spec=format_spec,
+                                                                    preferred_units=preferred_units))
 
     @property
     def value(self) -> Any:
@@ -74,11 +84,26 @@ class Func(Node):
         else:
             return nan
 
-    def args_tex(self, subs: bool = False) -> list[str]:
-        return [arg.get_tex(subs) for arg in self.arguments]
+    def args_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> list[str]:
+        return [arg.get_tex(subs=subs,
+                            format_spec=format_spec,
+                            preferred_units=preferred_units)
+                for arg in self.arguments]
 
-    def all_args_tex(self, subs: bool = False) -> str:
-        return ', '.join(self.args_tex(subs))
+    def all_args_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        return ', '.join(self.args_tex(subs=subs,
+                                       format_spec=format_spec,
+                                       preferred_units=preferred_units))
 
     def args_values(self) -> list[Any]:
         return [arg.value for arg in self.arguments]

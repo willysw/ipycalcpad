@@ -1,7 +1,7 @@
 import pint
 import yaml
 
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from typing import Any, cast, ClassVar
 
@@ -63,7 +63,7 @@ class Configuration:
         return cfg if cfg else default
 
     @staticmethod
-    def reduce_units(value: Any) -> Any:...
+    def reduce_units(value: Any, preferred_units: Sequence[str] = None) -> Any:...
     #NOTE: method is defined below.
 
     @classmethod
@@ -167,17 +167,20 @@ class Configuration:
         return obj
 
 
+def _pint_units_from_strings(strs: Sequence[str] = None) -> Sequence|None:
+    if strs:
+        return tuple(pint.Unit(i) for i in strs)
+    else:
+        return None
+
 # Initialize the singleton instance.
 _C = Configuration()
 _PINT_PREFERRED_UNIT_STRS = cast(list[str], _C['objects.preferred_units'])
-if _PINT_PREFERRED_UNIT_STRS:
-    _PINT_PREFERRED_UNITS = [pint.Unit(i) for i in _PINT_PREFERRED_UNIT_STRS]
-else:
-    _PINT_PREFERRED_UNITS = None
+_PINT_PREFERRED_UNITS = _pint_units_from_strings(_PINT_PREFERRED_UNIT_STRS)
 
 # Define the ``reduce_units`` method. This is defined here so that the Configuration
 # can be instantiated and used to import the preferred units.
-def reduce_units(value: Any) -> Any:
+def reduce_units(value: Any, preferred_units: Sequence[str] = None) -> Any:
     """
     Reduce units of a pint Quantity to preferred or base units.
 
@@ -185,6 +188,8 @@ def reduce_units(value: Any) -> Any:
     ----------
     value : Any
         The value to reduce. If not a pint.Quantity, returns unchanged.
+    preferred_units : Sequence[str], optional
+        Preferred units to convert to.
 
     Returns
     -------
@@ -195,7 +200,9 @@ def reduce_units(value: Any) -> Any:
     if not isinstance(value, pint.Quantity):
         return value
 
-    if _PINT_PREFERRED_UNITS:
+    if preferred_units:
+        return value.to_preferred(_pint_units_from_strings(preferred_units))
+    elif _PINT_PREFERRED_UNITS:
         return value.to_preferred(_PINT_PREFERRED_UNITS)
     else:
         return value.to_base_units()

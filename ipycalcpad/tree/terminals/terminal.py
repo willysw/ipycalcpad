@@ -1,5 +1,6 @@
 import math
 
+from collections.abc import Sequence
 from dataclasses import dataclass, KW_ONLY
 from typing import Any, ClassVar, Type
 
@@ -17,8 +18,16 @@ class Terminal(Node):
     obj: Any = None
     template: ClassVar[str] = _TEMPLATE
 
-    def get_tex(self, subs: bool = False) -> str:
-        return self.template.format(object=_C.format_object(self.obj))
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        reduced_obj = _C.reduce_units(self.obj, preferred_units=preferred_units)
+        return self.template.format(
+            object=_C.format_object(reduced_obj, format_spec=format_spec)
+        )
 
     @property
     def value(self) -> Any:

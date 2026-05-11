@@ -19,21 +19,33 @@ class Node(NodeType):
 
     @classmethod
     def from_ast(
-            cls,
-            node: ast.expr,
-            namespace: Mapping[str,Any],
-            children: Sequence[NodeType]
+        cls,
+        node: ast.expr,
+        namespace: Mapping[str,Any],
+        children: Sequence[NodeType]
     ) -> 'Node':
         return cls(namespace)
 
-    def get_tex(self, subs: bool = False) -> str:
+    def get_tex(
+        self,
+        subs: bool = False,
+        format_spec: str = None,
+        preferred_units: Sequence[str] = None
+    ) -> str:
         return f'\\texttt{{{self.__class__.__name__}}}'
 
-    def get_tex_result(self, format_spec: str = None) -> str:
-        return _C.format_object(self.value, format_spec)
+    def get_tex_result(
+        self,
+        format_spec: str = None,
+        preferred_units: Sequence[str] = None
+    ) -> str:
+        return _C.format_object(self.get_result(preferred_units=preferred_units), format_spec)
 
-    def get_result(self):
-        return _C.reduce_units(self.value)
+    def get_result(
+        self,
+        preferred_units: Sequence[str] = None
+    ) -> Any:
+        return _C.reduce_units(self.value, preferred_units=preferred_units)
 
     @property
     def value(self) -> Any:
@@ -61,11 +73,20 @@ class Node(NodeType):
         return False
 
     @staticmethod
-    def parens_by_precedence(precedence: int, other: NodeType, subs: bool = False) -> str:
+    def parens_by_precedence(
+            precedence: int,
+            other: NodeType,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        tex = other.get_tex(subs=subs,
+                            format_spec=format_spec,
+                            preferred_units=preferred_units)
         if precedence > other.node_precedence:
-            return f'\\left({other.get_tex(subs)}\\right)'
+            return f'\\left({tex}\\right)'
         else:
-            return other.get_tex(subs)
+            return tex
 
 
 __all__ = ['Node']

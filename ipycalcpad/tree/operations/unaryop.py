@@ -49,8 +49,17 @@ class UnaryOp(Node):
 
     def op_func(self, x): return math.nan
 
-    def get_tex(self, subs: bool = False) -> str:
-        return self.op_template.format(operand=self.operand_tex(subs))
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None,
+    ) -> str:
+        return self.op_template.format(
+            operand=self.operand_tex(subs=subs,
+                                     format_spec=format_spec,
+                                     preferred_units=preferred_units)
+        )
 
     @property
     def value(self) -> Any:
@@ -59,8 +68,19 @@ class UnaryOp(Node):
         else:
             return math.nan
 
-    def operand_tex(self, subs: bool = False) -> str:
-        return self.parens_by_precedence(self.operand_precedence, self.operand, subs)
+    def operand_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None,
+    ) -> str:
+        return self.parens_by_precedence(
+            self.operand_precedence,
+            self.operand,
+            subs=subs,
+            format_spec=format_spec,
+            preferred_units=preferred_units
+        )
 
 
 __all__ = ['UnaryOp']

@@ -1,5 +1,6 @@
 import ast
 
+from collections.abc import Sequence
 from typing import Callable, ClassVar
 
 from .binop import BinOp
@@ -48,17 +49,40 @@ class Mult(BinOp):
     literal_types: ClassVar[tuple[type, ...]] = (Literal,)
     def op_func(self, x, y): return x * y
 
-    def get_tex(self, subs: bool = False) -> str:
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
         if subs:
-            return self.op_template.format(left=self.left_tex(True),
-                                           right=self.right_tex(True))
+            return self.op_template.format(
+                left=self.left_tex(subs=True,
+                                   format_spec=format_spec,
+                                   preferred_units=preferred_units),
+                right=self.right_tex(subs=True,
+                                     format_spec=format_spec,
+                                     preferred_units=preferred_units)
+            )
         else:
             if Mult._is_short(self.left, self.right):
-                return self.op_template_short.format(left=self.left_tex(False),
-                                                    right=self.right_tex(False))
+                return self.op_template_short.format(
+                    left=self.left_tex(subs=False,
+                                       format_spec=format_spec,
+                                       preferred_units=preferred_units),
+                    right=self.right_tex(subs=False,
+                                         format_spec=format_spec,
+                                         preferred_units=preferred_units)
+                )
             else:
-                return self.op_template.format(left=self.left_tex(False),
-                                               right=self.right_tex(False))
+                return self.op_template.format(
+                    left=self.left_tex(subs=False,
+                                       format_spec=format_spec,
+                                       preferred_units=preferred_units),
+                    right=self.right_tex(subs=False,
+                                         format_spec=format_spec,
+                                         preferred_units=preferred_units)
+                )
     
     @classmethod
     def _is_short(cls, left:NodeType, right:NodeType) -> bool:

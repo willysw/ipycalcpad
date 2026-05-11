@@ -96,6 +96,13 @@ class Line:
         else:
             return None
 
+    @property
+    def preferred_units(self) -> list[str]|None:
+        if self.arguments and self.arguments.preferred_units:
+            return self.arguments.preferred_units
+        else:
+            return None
+
     def get_markdown(self) -> str:
         """
         Generate complete markdown string for the line.
@@ -152,7 +159,15 @@ class Line:
             original form, or None if no expressions exist.
         """
         if self.expressions:
-            return [_EXPRESSION_TEMPLATE.format(tex=expr.expr.get_tex(subs=False)) for expr in self.expressions]
+            return [_EXPRESSION_TEMPLATE
+                    .format(
+                        tex=expr.expr.get_tex(
+                            subs=False,
+                            format_spec=self.format_spec,
+                            preferred_units=self.preferred_units
+                        )
+                    )
+                    for expr in self.expressions]
         else:
             return None
 
@@ -204,11 +219,22 @@ class Line:
                                 (isinstance(expr.expr, Assign) and
                                  isinstance(expr.expr.expression, Literal)))
                                 for expr in self.expressions]
-
-            return [(_RESULT_TEMPLATE.format(tex=expr.expr.get_tex_result(format_spec=self.format_spec))
-                     if not is_literal else "")
-                    for expr, is_literal
-                    in zip(self.expressions, expr_is_literal)]
+            out = []
+            for expr, is_literal in zip(self.expressions, expr_is_literal):
+                if is_literal:
+                    out.append("")
+                else:
+                    out.append(
+                        _RESULT_TEMPLATE
+                        .format(
+                            tex=expr.expr
+                            .get_tex_result(
+                                format_spec=self.format_spec,
+                                preferred_units=self.preferred_units
+                            )
+                        )
+                    )
+            return out
         else:
             return None
 

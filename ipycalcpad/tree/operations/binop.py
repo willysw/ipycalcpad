@@ -40,10 +40,20 @@ class BinOp(Node):
 
     def op_func(self, x, y): return nan
 
-    def get_tex(self, subs: bool = False) -> str:
-        return (self.op_template
-                .format(left=self.left_tex(subs),
-                        right=self.right_tex(subs)))
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        return self.op_template.format(
+            left=self.left_tex(subs=subs,
+                               format_spec=format_spec,
+                               preferred_units=preferred_units),
+            right=self.right_tex(subs=subs,
+                                 format_spec=format_spec,
+                                 preferred_units=preferred_units)
+        )
 
     @property
     def value(self) -> Any:
@@ -52,11 +62,33 @@ class BinOp(Node):
         else:
             return nan
 
-    def left_tex(self, subs: bool = False) -> str:
-        return self.parens_by_precedence(self.left_precedence, self.left, subs)
+    def left_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        return self.parens_by_precedence(
+            self.left_precedence,
+            self.left,
+            subs=subs,
+            format_spec=format_spec,
+            preferred_units=preferred_units
+        )
 
-    def right_tex(self, subs: bool = False) -> str:
-        return self.parens_by_precedence(self.right_precedence, self.right, subs)
+    def right_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        return self.parens_by_precedence(
+            self.right_precedence,
+            self.right,
+            subs=subs,
+            format_spec=format_spec,
+            preferred_units=preferred_units
+        )
 
 
 __all__ = ['BinOp']

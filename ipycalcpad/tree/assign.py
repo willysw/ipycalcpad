@@ -61,13 +61,25 @@ class Assign(Node):
         """
         return cls(namespace, target=children[0], expression=children[1])
     
-    def get_tex(self, subs: bool = False) -> str:
-        if subs:
-            return _TEMPLATE_SUBS.format(target=self.target.get_tex(False),
-                                         val=self.expression.get_tex(True))
-        else:
-            return _TEMPLATE.format(target=self.target.get_tex(False),
-                                    val=self.expression.get_tex(False))
+    def get_tex(
+            self,
+            subs: bool = False,
+            format_spec: str = None,
+            preferred_units: Sequence[str] = None
+    ) -> str:
+        template = _TEMPLATE_SUBS if subs else _TEMPLATE
+        return template.format(
+            target=self.target.get_tex(
+                subs=False,
+                format_spec=format_spec,
+                preferred_units=preferred_units
+            ),
+            val=self.expression.get_tex(
+                subs=subs,
+                format_spec=format_spec,
+                preferred_units=preferred_units
+            )
+        )
     
     @property
     def value(self):
