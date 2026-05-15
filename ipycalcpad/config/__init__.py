@@ -17,19 +17,16 @@ from .config import Configuration
 _C = Configuration()
 
 # Register standard formatters
-from .formats.number_format import NumberFormat
-from .formats.string_format import StringFormat
-from .formats.sequence_format import SequenceFormat
-from .formats.pint_format import PintFormat
-from .formats.pandas_format import PDDataFrameFormat, PDSeriesFormat
+from .formats import *
 
 for fmt in (
-        PDDataFrameFormat,
-        PDSeriesFormat,
-        PintFormat,
-        NumberFormat,
-        StringFormat,
-        SequenceFormat,
+    PDDataFrameFormat,
+    PDSeriesFormat,
+    PintFormat,
+    NumberFormat,
+    StringFormat,
+    SequenceFormat,
+    NDArrayFormat,
 ):
     fmt.register_format()
 

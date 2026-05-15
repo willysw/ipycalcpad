@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from ..protocols import NodeType
-from ..tree import Literal, Variable, Func, BinOp, UnaryOp, Assign, GenericSequence
+from ..tree import Literal, Variable, Func, BinOp, UnaryOp, Assign, SequenceNode
 
 
 class ASTTransformer(ast.NodeTransformer):
@@ -56,15 +56,16 @@ class ASTTransformer(ast.NodeTransformer):
 
     def visit_Tuple(self, node: ast.Tuple) -> NodeType:
         children = [self.visit(elt) for elt in node.elts]
-        return GenericSequence.from_ast(node, self.namespace, children=children)
+        return SequenceNode.from_ast(node, self.namespace, children=children)
+
+    def visit_List(self, node: ast.List) -> NodeType:
+        children = [self.visit(elt) for elt in node.elts]
+        return SequenceNode.from_ast(node, self.namespace, children=children)
 
     #TODO: implement these
     """ Unimplemented Visitors """
     def visit_Slice(self, node: ast.Slice) -> slice|None:
         raise NotImplementedError("Slice nodes are not supported yet in this transformer")
-
-    def visit_List(self, node: ast.List) -> list[NodeType]:
-        raise NotImplementedError("List nodes are not supported yet in this transformer")
 
     def visit_Set(self, node: ast.Set) -> set[NodeType]:
         raise NotImplementedError("Set nodes are not supported yet in this transformer")

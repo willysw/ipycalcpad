@@ -92,14 +92,11 @@ class CalcPad:
         """
         Generate Markdown representation of the Calcpad cell.
         """
-        if _CELL_START and _CELL_END: #TODO: this needs to change.
-            return (
-                _CELL_START +
-                '\n\n' +
-                '\n\n'.join(line.get_markdown() for line in self.lines) +
-                '\n\n' +
-                _CELL_END
-            )
-        else:
-            return '\n\n'.join(line.get_markdown() for line in self.lines)
+        line_md = [_CELL_START]+[line.get_markdown() for line in self.lines]+[_CELL_END]
+        md_out = '\n\n'.join(s for s in line_md if s)
+
+        if self.arguments.debug:
+            md_out+=f"\n\n```markdown\n{md_out}\n```\n\n"
+
+        return md_out
 
