@@ -5,7 +5,7 @@ from dataclasses import dataclass, KW_ONLY
 from typing import ClassVar, Any, NamedTuple
 
 from ...protocols import NodeType
-from ...utility import name_to_tex
+from ...utility import get_attribute_name, get_root_object, name_to_tex
 from .terminal import Terminal
 
 from ...config import Configuration
@@ -14,15 +14,6 @@ _C = Configuration()
 _TEMPLATE:str = _C['variables.default']
 _TEMPLATE_SUBS:str = _C['variables.substituted']
 _SPECIAL_VARS:dict[str,str] = _C['variables.special_vars']
-
-
-class _AttrItem(NamedTuple):
-    names: list[str]
-    obj: Any
-    @property
-    def name(self):
-        return "_".join(self.names)
-
 
 KEY_TYPE = NodeType | str | int | slice | None
 
@@ -46,8 +37,9 @@ class Variable(Terminal):
             return cls(namespace, obj=namespace.get(node.id), name=node.id)
 
         elif isinstance(node, ast.Attribute):
-            item = cls._get_attribute_names(node.value, namespace)
-            return Variable(namespace, obj=item.obj, name=item.name)
+            item_name = get_attribute_name(node)
+            item_obj = get_root_object(node, namespace)
+            return cls(namespace, obj=item_obj, name=item_name)
 
         elif isinstance(node, ast.Subscript) and children:
             if isinstance(node.value, ast.Name):
@@ -98,25 +90,6 @@ class Variable(Terminal):
             return True
         else:
             return False
-
-    @classmethod
-    def _get_attribute_names(cls, node: ast.AST, namespace: Mapping[str,Any]) -> _AttrItem:
-        if isinstance(node, ast.Name):  # Terminal
-            obj = namespace.get(node.id)
-            if obj:
-                return _AttrItem(names=[node.id], obj=obj)
-
-        if isinstance(node, ast.Attribute):
-            item = cls._get_attribute_names(node.value, namespace)
-            if hasattr(item.obj, node.attr):
-                return _AttrItem(names=item.names + [node.attr],
-                                 obj=getattr(item.obj, node.attr))
-
-        if isinstance(node, ast.Call):
-            return _AttrItem(names=[node.func.id],
-                             obj=eval(ast.unparse(node), namespace)) # noqa
-
-        return _AttrItem(names=[], obj=eval(ast.unparse(node), namespace)) # noqa
 
 
 __all__ = ['Variable', 'KEY_TYPE']

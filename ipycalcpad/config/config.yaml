@@ -23,7 +23,7 @@ assign:
 
 # Special functions
 callables:
-  default: '{{{name}}}\left({args}\right)'
+  default: '\mathrm{{{name}}}\left({args}\right)'
   known_function: '\{name}\left({args}\right)'
   known_functions: [ 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh',
                      'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'ln', 'log' ]

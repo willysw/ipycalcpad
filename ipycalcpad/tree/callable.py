@@ -8,6 +8,7 @@ from typing import Any, ClassVar
 from ..protocols import NodeType
 from .node import Node
 from .terminals import PintQuantity
+from ..utility import get_root_object, name_to_tex
 
 
 from ..config import Configuration
@@ -43,19 +44,25 @@ class Func(Node):
             namespace: Mapping[str, Any],
             children: Sequence[NodeType]
     ) -> 'Func|PintQuantity':
-        func_name = node.func.id
         # Special case for PintQuantity
-        if func_name == '_PINT_':
+        if isinstance(node.func, ast.Name) and node.func.id == '_PINT_':
             return PintQuantity.from_ast(node, namespace)
 
-        func = namespace.get(func_name)
+        func = get_root_object(node.func, namespace)
         if func and isinstance(func, Callable):
+            if isinstance(node.func, ast.Name):
+                func_name = node.func.id
+            elif isinstance(node.func, ast.Attribute):
+                func_name = node.func.attr
+            else:
+                func_name = func.__name__
+
             return Func(namespace,
                         name=func_name,
                         func=func,
                         arguments=children)
         else:
-            raise EnvironmentError(f"Function {func_name} not found.")
+            raise NotImplementedError
 
     def get_tex(
             self,
@@ -63,16 +70,21 @@ class Func(Node):
             format_spec: str = None,
             preferred_units: Sequence[str] = None
     ) -> str:
-        if self.func_is_special:
+        if self.func_is_special: #TODO: Implement special functions
             return self.func_template.format(name=self.name,
                                              args=self.args_tex(subs=subs,
                                                                 format_spec=format_spec,
                                                                 preferred_units=preferred_units))
         else:
-            return self.func_template.format(name=self.name,
-                                             args=self.all_args_tex(subs=subs,
-                                                                    format_spec=format_spec,
-                                                                    preferred_units=preferred_units))
+            return (self.func_template
+                    .format(
+                        name=name_to_tex(self.name),
+                        args=self.all_args_tex(
+                            subs=subs,
+                            format_spec=format_spec,
+                            preferred_units=preferred_units
+                        )
+                    ))
 
     @property
     def value(self) -> Any:

@@ -8,7 +8,8 @@ from ..protocols import NodeType
 from .node import Node
 from .terminals.literals import SequenceLiteral, ArrayLiteral
 
-_SEQ_FORMAT = "\\left[ {data} \\right]"
+_SEQ_FORMAT = "\\left( {data} \\right)"
+_SEQ_SEP = r" ,\; "
 
 
 @dataclass(kw_only=True)
@@ -50,7 +51,7 @@ class SequenceNode(Node):
             preferred_units: Sequence[str] = None
     ) -> str:
         return _SEQ_FORMAT.format(
-            data=' ,\\; '.join(e.get_tex(subs, format_spec, preferred_units) for e in self.elements),
+            data=_SEQ_SEP.join(e.get_tex(subs, format_spec, preferred_units) for e in self.elements),
         )
 
     def get_tex_result(
@@ -59,7 +60,7 @@ class SequenceNode(Node):
             preferred_units: Sequence[str] = None
     ) -> str:
         return _SEQ_FORMAT.format(
-            data=' ,\\; '.join(e.get_tex_result(format_spec, preferred_units) for e in self.elements),
+            data=_SEQ_SEP.join(e.get_tex_result(format_spec, preferred_units) for e in self.elements),
         )
 
     def get_result(

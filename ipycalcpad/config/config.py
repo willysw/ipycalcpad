@@ -126,9 +126,6 @@ class Configuration:
         except StopIteration:
             cls.pint_registry = pint.UnitRegistry()
             namespace['ureg'] = cls.pint_registry
-            raise Warning('No unit registry found in namespace. '
-                          'Using default registry `ureg` and '
-                          'adding to the namespace.')
 
     @classmethod
     def _load_config(cls):

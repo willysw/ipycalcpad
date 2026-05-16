@@ -1,5 +1,5 @@
 import pytest
-from ipycalcpad.utility.name_utilities import (
+from ipycalcpad.utility.names import (
     name_to_tex,
 )
 
