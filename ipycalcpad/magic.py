@@ -28,15 +28,18 @@ _UTIL_GROUP.add_argument('--debug',
 class Magic(Magics):
 
     @line_cell_magic
-    def pad(self, line:str, cell:str) -> CalcPad|None:
+    def pad(self, line:str, cell:str='') -> CalcPad|None:
         return self.calcpad(line, cell)
 
     @line_cell_magic
-    def calcpad(self, line:str, cell:str) -> CalcPad|None:
+    def calcpad(self, line:str, cell:str='') -> CalcPad|None:
         try:
             arguments = _PARSER.parse_args(line.split())
         except SystemExit:
             return None
 
-        return CalcPad(cell_text=cell, arguments=arguments, namespace=_IPYTHON.user_ns)
+        if cell:
+            return CalcPad(cell_text=cell, arguments=arguments, namespace=_IPYTHON.user_ns)
+        else:
+            return None
 

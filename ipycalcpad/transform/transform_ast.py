@@ -8,6 +8,10 @@ from ..protocols import NodeType
 from ..tree import Literal, Variable, Func, BinOp, UnaryOp, Assign, SequenceNode
 
 
+class SkipLineException(Exception):
+    pass
+
+
 class ASTTransformer(ast.NodeTransformer):
     namespace: Mapping[str,Any]
     arguments: Namespace
@@ -17,8 +21,18 @@ class ASTTransformer(ast.NodeTransformer):
         self.arguments = arguments
         super().__init__()
 
+    def generic_visit(self, node: ast.AST) -> NodeType:
+        raise SkipLineException
+
     def visit_Module(self, node: ast.Module) -> list[NodeType]:
-        return list(self.visit(expr) for expr in node.body)
+        lines_out = []
+        for expr in node.body:
+            try:
+                lines_out.append(self.visit(expr))
+            except SkipLineException:
+                pass
+
+        return lines_out
 
     def visit_Expr(self, node: ast.Expr) -> NodeType:
         return self.visit(node.value)
