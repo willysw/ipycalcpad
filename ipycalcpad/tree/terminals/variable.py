@@ -2,7 +2,7 @@ import ast
 
 from collections.abc import Sequence, Mapping
 from dataclasses import dataclass, KW_ONLY
-from typing import ClassVar, Any, NamedTuple
+from typing import ClassVar, Any
 
 from ...protocols import NodeType
 from ...utility import get_attribute_name, get_root_object, name_to_tex
@@ -11,9 +11,7 @@ from .terminal import Terminal
 from ...config import Configuration
 _C = Configuration()
 
-_TEMPLATE:str = _C['variables.default']
-_TEMPLATE_SUBS:str = _C['variables.substituted']
-_SPECIAL_VARS:dict[str,str] = _C['variables.special_vars']
+_SPECIAL_VARS_KEY: str = 'variables.special_vars'
 
 KEY_TYPE = NodeType | str | int | slice | None
 
@@ -23,15 +21,15 @@ class Variable(Terminal):
     _:KW_ONLY
     name: str = ''
     key: KEY_TYPE = None
-    template: ClassVar[str] = _TEMPLATE
-    template_subs: ClassVar[str] = _TEMPLATE_SUBS
+    template_key: ClassVar[str] = 'variables.default'
+    template_key_subs: ClassVar[str] = 'variables.substituted'
 
     @classmethod
     def from_ast(
             cls,
             node: ast.expr,
             namespace: Mapping[str,Any],
-            children: Sequence[NodeType] = None
+            children: Sequence[NodeType]|None = None
     ) -> NodeType:
         if isinstance(node, ast.Name):
             return cls(namespace, obj=namespace.get(node.id), name=node.id)
@@ -47,7 +45,7 @@ class Variable(Terminal):
                 var.key=children[0]
                 return var
             else:
-                raise TypeError(f'Unexpected node type {type(node.value)} for subscripted variable')
+                raise TypeError(f'Unexpected node type {type(node.value)} for subscripted variable') # noqa
 
         else:
             raise TypeError(f'Unexpected node type {type(node)} for variable') # noqa
@@ -73,16 +71,31 @@ class Variable(Terminal):
     def get_tex(
             self,
             subs: bool = False,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
         if not subs:
-            return self.template.format(var=name_to_tex(self.name, _SPECIAL_VARS))
+            return self.template.format(var=name_to_tex(self.name, self.special_vars))
         else:
             reduced_obj = _C.reduce_units(self.obj, preferred_units=preferred_units)
             return self.template_subs.format(
                 var=_C.format_object(reduced_obj, format_spec=format_spec)
             )
+
+    @property
+    def template(self) -> str:
+        return _C[self.template_key]
+
+    @property
+    def template_subs(self) -> str:
+        return _C[self.template_key_subs]
+
+    @property
+    def special_vars(self) -> dict[str, str]:
+        out = dict()
+        if special:=_C[_SPECIAL_VARS_KEY]:
+            out.update(special)
+        return out
 
     @property
     def has_substituted_fields(self) -> bool:

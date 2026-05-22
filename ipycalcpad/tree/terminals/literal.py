@@ -10,21 +10,19 @@ from .terminal import Terminal
 from ...config import Configuration
 _C = Configuration()
 
-_TEMPLATE:str = _C['literals.default']
-
 
 @dataclass
 class Literal(Terminal):
     _:KW_ONLY
     obj: Any = None
-    template: ClassVar[str] = _TEMPLATE
+    template_key: ClassVar[str] = 'literals.default'
 
     @classmethod
     def from_ast(
             cls,
             node: ast.expr,
             namespace: Mapping[str,Any],
-            children: Sequence[NodeType] = None
+            children: Sequence[NodeType]|None = None
     ) -> 'Literal':
         if isinstance(node, ast.Constant):
             return cls(namespace, obj=node.value)

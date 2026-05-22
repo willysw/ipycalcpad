@@ -16,14 +16,14 @@ class ArrayLiteral(Literal):
     def get_tex(
             self,
             subs: bool = False,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
         return NDArrayFormat.format(self.obj, format_spec)
 
     def get_tex_result(
             self,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
         return NDArrayFormat.format(self.obj, format_spec)

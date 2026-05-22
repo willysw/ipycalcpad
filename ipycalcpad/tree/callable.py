@@ -14,10 +14,10 @@ from ..utility import get_root_object, name_to_tex
 from ..config import Configuration
 _C = Configuration()
 
-_TEMPLATE:str = _C['callables.default']
-_TEMPLATE_KNOWN:str = _C['callables.known_function']
-_SPECIAL_FUNCTIONS:dict[str,str] = _C['callables.special_functions']
-_KNOWN_FUNCTIONS:list[str] = _C['callables.known_functions']
+_TEMPLATE_KEY:str = 'callables.default'
+_TEMPLATE_KEY_KNOWN:str = 'callables.known_function'
+_SPECIAL_FUNCTIONS_KEY:str = 'callables.special_functions'
+_KNOWN_FUNCTIONS_KEY:str = 'callables.known_functions'
 
 
 @dataclass
@@ -31,11 +31,11 @@ class Func(Node):
     func_is_special: bool = field(default=False, repr=False)
 
     def __post_init__(self):
-        if self.name in _SPECIAL_FUNCTIONS:
+        if self.name in (fns:=self.special_functions):
             self.func_is_special = True
-            self.func_template = _SPECIAL_FUNCTIONS[self.name]
-        elif self.name in _KNOWN_FUNCTIONS:
-            self.func_template = _TEMPLATE_KNOWN
+            self.func_template = fns[self.name]
+        elif self.name in self.known_functions:
+            self.func_template = _C[_TEMPLATE_KEY_KNOWN]
 
     @classmethod
     def from_ast(
@@ -67,10 +67,10 @@ class Func(Node):
     def get_tex(
             self,
             subs: bool = False,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
-        if self.func_is_special: #TODO: Implement special functions
+        if self.func_is_special:
             return self.func_template.format(name=self.name,
                                              args=self.args_tex(subs=subs,
                                                                 format_spec=format_spec,
@@ -89,6 +89,20 @@ class Func(Node):
     @property
     def value(self) -> Any:
         return self.call()
+
+    @property
+    def special_functions(self) -> dict[str, str]:
+        out = dict()
+        if special := _C[_SPECIAL_FUNCTIONS_KEY]:
+            out.update(special)
+        return out
+
+    @property
+    def known_functions(self) -> set[str]:
+        out = set()
+        if known := _C[_KNOWN_FUNCTIONS_KEY]:
+            out.update(known)
+        return out
 
     def call(self) -> Any:
         if self.func:

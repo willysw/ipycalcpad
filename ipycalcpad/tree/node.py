@@ -29,21 +29,21 @@ class Node(NodeType):
     def get_tex(
         self,
         subs: bool = False,
-        format_spec: str = None,
-        preferred_units: Sequence[str] = None
+        format_spec: str|None = None,
+        preferred_units: Sequence[str]|None = None
     ) -> str:
         return f'\\texttt{{{self.__class__.__name__}}}'
 
     def get_tex_result(
         self,
-        format_spec: str = None,
-        preferred_units: Sequence[str] = None
+        format_spec: str|None = None,
+        preferred_units: Sequence[str]|None = None
     ) -> str:
         return _C.format_object(self.get_result(preferred_units=preferred_units), format_spec)
 
     def get_result(
         self,
-        preferred_units: Sequence[str] = None
+        preferred_units: Sequence[str]|None = None
     ) -> Any:
         return _C.reduce_units(self.value, preferred_units=preferred_units)
 
@@ -77,8 +77,8 @@ class Node(NodeType):
             precedence: int,
             other: NodeType,
             subs: bool = False,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
         tex = other.get_tex(subs=subs,
                             format_spec=format_spec,

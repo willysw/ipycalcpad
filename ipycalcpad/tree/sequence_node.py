@@ -1,7 +1,7 @@
 import ast
 from collections.abc import Sequence
 from dataclasses import dataclass
-from numpy import ndarray, asarray
+from numpy import asarray
 from typing import Any, ClassVar, Mapping
 
 from ..protocols import NodeType
@@ -47,8 +47,8 @@ class SequenceNode(Node):
     def get_tex(
             self,
             subs: bool = False,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
         return _SEQ_FORMAT.format(
             data=_SEQ_SEP.join(e.get_tex(subs, format_spec, preferred_units) for e in self.elements),
@@ -56,8 +56,8 @@ class SequenceNode(Node):
 
     def get_tex_result(
             self,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
         return _SEQ_FORMAT.format(
             data=_SEQ_SEP.join(e.get_tex_result(format_spec, preferred_units) for e in self.elements),
@@ -65,7 +65,7 @@ class SequenceNode(Node):
 
     def get_result(
             self,
-            preferred_units: Sequence[str] = None
+            preferred_units: Sequence[str]|None = None
     ) -> tuple[Any,...]:
         return tuple(n.get_result(preferred_units) for n in self.elements)
 

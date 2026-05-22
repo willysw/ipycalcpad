@@ -10,8 +10,8 @@ from .node import Node
 from ..config import Configuration
 _C = Configuration()
 
-_TEMPLATE:str = _C['assign.default']
-_TEMPLATE_SUBS:str = _C['assign.substituted']
+_TEMPLATE_KEY:str = 'assign.default'
+_TEMPLATE_KEY_SUBS:str = 'assign.substituted'
 
 
 @dataclass
@@ -64,10 +64,10 @@ class Assign(Node):
     def get_tex(
             self,
             subs: bool = False,
-            format_spec: str = None,
-            preferred_units: Sequence[str] = None
+            format_spec: str|None = None,
+            preferred_units: Sequence[str]|None = None
     ) -> str:
-        template = _TEMPLATE_SUBS if subs else _TEMPLATE
+        template = _C[_TEMPLATE_KEY_SUBS] if subs else _C[_TEMPLATE_KEY]
         return template.format(
             target=self.target.get_tex(
                 subs=False,
