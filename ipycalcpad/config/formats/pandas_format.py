@@ -1,4 +1,5 @@
 from pandas import DataFrame, Series, Index
+from pandas.api.types import is_numeric_dtype, is_string_dtype
 
 from ...utility import name_to_tex
 from ..format import Format
@@ -21,7 +22,10 @@ class PDDataFrameFormat(Format):
         df_out = DataFrame(index=index_out)
 
         for col, col_name in ((df[col], col) for col in df.columns):
-            formated_col = col.map(lambda x: f'${_C.format_object(x, format_spec)}$')
+            if is_string_dtype(col):
+                formated_col = col.copy()
+            else:
+                formated_col = col.map(lambda x: f'${_C.format_object(x, format_spec)}$')
             formated_col.index = index_out
             formated_col_name = f'${name_to_tex(col_name)}$'
             df_out[formated_col_name] = formated_col
@@ -39,7 +43,6 @@ class PDDataFrameFormat(Format):
             else:
                 out.append(str(i))
         return Index(out)
-
 
 class PDSeriesFormat(Format):
     types_to_format = (Series,)
