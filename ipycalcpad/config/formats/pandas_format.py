@@ -11,13 +11,13 @@ class PDDataFrameFormat(Format):
     types_to_format = (DataFrame,)
 
     @classmethod
-    def format(cls, value: DataFrame, format_spec:str=None) -> str:
+    def format(cls, value: DataFrame, format_spec:str|None=None) -> str:
         formatted_df = cls._format_dataframe(value, format_spec)
         return f'{formatted_df.to_markdown(stralign="right")}'
 
     @staticmethod
-    def _format_dataframe(df: DataFrame, format_spec:str=None) -> DataFrame:
-        index_out = Index([f'${name_to_tex(i)}$' for i in df.index])
+    def _format_dataframe(df: DataFrame, format_spec:str|None=None) -> DataFrame:
+        index_out = PDDataFrameFormat._format_index(df, format_spec)
         df_out = DataFrame(index=index_out)
 
         for col, col_name in ((df[col], col) for col in df.columns):
@@ -28,12 +28,24 @@ class PDDataFrameFormat(Format):
 
         return df_out
 
+    @staticmethod
+    def _format_index(df: DataFrame, format_spec: str|None = None) -> Index:
+        out = []
+        for i, itype in zip(df.index, (type(j) for j in df.index)):
+            if isinstance(itype, str):
+                out.append(f'${name_to_tex(i)}$')
+            elif isinstance(itype, (int, float)):
+                out.append(f'${_C.format_object(i, format_spec)}$')
+            else:
+                out.append(str(i))
+        return Index(out)
+
 
 class PDSeriesFormat(Format):
     types_to_format = (Series,)
 
     @classmethod
-    def format(cls, value: Series, format_spec:str=None) -> str:
+    def format(cls, value: Series, format_spec: str|None = None) -> str:
         if format_spec is None:
             format_spec = '.3g~L'
 

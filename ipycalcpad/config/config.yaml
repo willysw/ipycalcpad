@@ -40,7 +40,8 @@ variables:
                  'gamma': '\gamma', 'Gamma': '\Gamma', 'delta': '\delta',
                  'Delta': '\Delta', 'epsilon': '\epsilon', 'zeta': '\zeta',
                  'eta': '\eta', 'theta': '\theta', 'iota': '\iota',
-                 'kappa': '\kappa', 'lambda': '\lambda', 'mu': '\mu', 'nu': '\nu',
+                 'kappa': '\kappa', 'lambda': '\lambda', 'mu': '\mu',
+                 'nu': '\nu', 'rho': '\rho', 'psi': '\psi',
                  'xi': '\xi', 'chi': '\chi', 'omicron': '\omicron',
                  'omega': '\omega', 'Omega': '\Omega', 'upsilon': '\upsilon',
                  'sigma': '\sigma', 'Sigma': '\Sigma', 'phi': '\phi'}

@@ -1,5 +1,6 @@
 import ast
 
+import builtins
 from collections.abc import Mapping
 from typing import Any
 
@@ -34,7 +35,10 @@ def get_root_object(
         return get_root_object(node.func, namespace)
 
     if isinstance(node, ast.Name):
-        return namespace.get(node.id)
+        if node.id in namespace:
+            return namespace.get(node.id)
+        elif hasattr(builtins, node.id):
+            return getattr(builtins, node.id)
 
     return None
 

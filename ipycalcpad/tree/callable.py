@@ -19,7 +19,6 @@ _TEMPLATE_KEY_KNOWN:str = 'callables.known_function'
 _SPECIAL_FUNCTIONS_KEY:str = 'callables.special_functions'
 _KNOWN_FUNCTIONS_KEY:str = 'callables.known_functions'
 
-
 @dataclass
 class Func(Node):
     _:KW_ONLY
@@ -27,7 +26,7 @@ class Func(Node):
     func: Callable
     arguments: Sequence[NodeType]
     child_fields: ClassVar[tuple[str, ...]] = ('func','arguments')
-    func_template: str = field(default=_TEMPLATE, repr=False)
+    func_template: str = field(default=_C[_TEMPLATE_KEY], repr=False)
     func_is_special: bool = field(default=False, repr=False)
 
     def __post_init__(self):
