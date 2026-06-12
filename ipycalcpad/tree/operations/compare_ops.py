@@ -1,45 +1,49 @@
+__all__ = ['COMPARE_OPS', 'Lt', 'Gt', 'LtE', 'GtE', 'Eq', 'CompareOp']
+
 import ast
 
 from typing import Callable, ClassVar
 
-from .compare import Compare
-from ...config import Configuration
+from ipycalcpad.protocols import NodeType
+from ipycalcpad.config import Configuration
 _C = Configuration()
 
 
-class Lt(Compare):
+class CompareOp:
+    op_template: ClassVar[str] = _C['comparisons.unknown_op']
+    op_func: ClassVar[Callable[[NodeType,NodeType],bool]] = lambda x, y: False
+
+
+class Lt(CompareOp):
     op_template = _C['comparisons.lt']
-    def op_func(self, x, y): return x < y
+    op_func = lambda x, y: x < y
 
 
-class Gt(Compare):
+class Gt(CompareOp):
     op_template = _C['comparisons.gt']
-    def op_func(self, x, y): return x > y
+    op_func = lambda x, y: x > y
 
 
-class LtE(Compare):
+class LtE(CompareOp):
     op_template = _C['comparisons.lte']
+    op_func = lambda x, y: x <= y
 
-    def op_func(self, x, y): return x <= y
 
-
-class GtE(Compare):
+class GtE(CompareOp):
     op_template = _C['comparisons.gte']
+    op_func = lambda x, y: x >= y
 
-    def op_func(self, x, y): return x >= y
 
-
-class Eq(Compare):
+class Eq(CompareOp):
     op_template = _C['comparisons.eq']
-    def op_func(self, x, y): return x == y
+    op_func = lambda x, y: x == y
 
 
-COMPARE_OPS: dict[type, Callable] = {
+# noinspection PyTypeChecker
+COMPARE_OPS: dict[type, CompareOp] = {
     ast.Lt:  Lt,
     ast.Gt:  Gt,
     ast.LtE: LtE,
     ast.GtE: GtE,
     ast.Eq:  Eq,
 }
-
-__all__ = ['Lt', 'Gt', 'LtE', 'GtE', 'Eq', 'COMPARE_OPS']
