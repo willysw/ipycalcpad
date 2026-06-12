@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from ..protocols import NodeType
-from ..tree import Literal, Variable, Func, BinOp, UnaryOp, Assign, SequenceNode
+from ..tree import Literal, Variable, Func, BinOp, UnaryOp, Assign, SequenceNode, Compare
 
 
 class SkipLineException(Exception):
@@ -67,6 +67,10 @@ class ASTTransformer(ast.NodeTransformer):
     def visit_UnaryOp(self, node: ast.UnaryOp) -> NodeType:
         operand = self.visit(node.operand)
         return UnaryOp.from_ast(node, self.namespace, children=(operand,))
+
+    def visit_Compare(self, node: ast.Compare) -> NodeType:
+        left, right = self.visit(node.left), self.visit(node.comparators[0])
+        return Compare.from_ast(node, self.namespace, children=(left, right))
 
     def visit_Tuple(self, node: ast.Tuple) -> NodeType:
         children = [self.visit(elt) for elt in node.elts]

@@ -6,7 +6,7 @@ line:
   expression: '{tex}'
   substituted: ' = {tex}'
   result: ' = {tex}'
-  comment: '{tex}&emsp;'
+  comment: '{tex}'
   full_expression: '{expression}{substituted}{result}'
   expression_separator: ' ,\quad '
   full_line: '&emsp;{comment}${full_expression}$'
@@ -64,3 +64,12 @@ unary_ops:
   neg: '-{{{operand}}}'
   pos: '{operand}'
   not: '\texttt{{not}}{{{operand}}}'
+
+comparisons:
+  unknown_op: '\texttt{{Compare}}({{{left}}},{{{right}}})'
+  lt: '{left} \lt {right}'
+  gt: '{left} \gt {right}'
+  lte: '{left} \le {right}'
+  gte: '{left} \ge {right}'
+  eq: '{left} = {right}'
+
